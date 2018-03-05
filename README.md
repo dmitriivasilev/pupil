@@ -5,3 +5,5 @@ TODO:
 - keep modularity in mind (e.g. make smt like pipeline in scikit-learn)
 - more verbosity
 - optimization (resize, threading, kimchi-picking)
+- ...
+- profit
