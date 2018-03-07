@@ -25,9 +25,9 @@ optional arguments:
 ```
 
 - in the opened window select region of interest and press *space*
-![alt text](https://github.com/dmitriivasilev/pupil/ROI.jpg)
+![alt text](https://github.com/dmitriivasilev/pupil/blob/master/ROI.jpg)
 - in the next window adjust kernel and threshold values untill you achieve enlightenment, press *q* key when you enter nirvana
-![alt text](https://github.com/dmitriivasilev/pupil/adjustments.jpg)
+![alt text](https://github.com/dmitriivasilev/pupil/blob/master/adjustments.jpg)
 - it will create *output_name*_area.npy and *output_name*_center.npy with numpy arrays containing results
 
 
