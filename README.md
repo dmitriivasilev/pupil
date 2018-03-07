@@ -11,17 +11,15 @@ pip install -r requirements.txt
 
 - run *Voight_Kampff_test.py* 
 ```
-python Voight_Kampff_test.py -h
 usage: Voight_Kampff_test.py [-h] [-f filename] [-o output_name]
 
-let the madness begin!
+example: python Voight_Kampff_test.py -f toy_data/data.mj2 -o test_output
 
 optional arguments:
   -h, --help      show this help message and exit
   -f filename     victim filename (example: toy_data/data.mj2)
   -o output_name  name of files to store outputs (example: `output` will
                   produce 2 files `output_area.npy` and `output_center.npy`)
-
 ```
 
 - in the opened window select region of interest and press *space*
