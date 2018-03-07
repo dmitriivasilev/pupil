@@ -250,7 +250,7 @@ def run(filename):
     return pupil_area, pupil_center
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='let the madness begin!')
+    parser = argparse.ArgumentParser(description='example: python Voight_Kampff_test.py -f toy_data/data.mj2 -o test_output')
     parser.add_argument('-f', metavar='filename',
                         help='victim filename (example: toy_data/data.mj2)')
     parser.add_argument('-o', metavar='output_name',
