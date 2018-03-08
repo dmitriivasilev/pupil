@@ -99,6 +99,8 @@ def find_pupil(cropped,gbkernel,threshval):
     interedged = cv2.Canny(interthresh.copy(),100,200)
     
     _, contours, _ = cv2.findContours(interedged, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    interedged = cv2.cvtColor(interedged,cv2.COLOR_GRAY2RGB);
         
         # Ellipse could only be fitted into a contour if it has at least 5 points. Thats why >4.
     contours = [contour for contour in contours if len(contour)>4]
@@ -121,6 +123,7 @@ def find_pupil(cropped,gbkernel,threshval):
         # If ellipse has a better ratio, than math is on our side.
         # If not, we pray for the best by picking contour with a better ratio.
         # This was implemented to minimize the probability of chosing wrong ellipse.
+    target_id = 0 #wtf?
     if loss.size != 0:    
         if np.argmin(loss) != np.argmin(loss2):
             target_id = np.argmin(loss)
@@ -130,7 +133,8 @@ def find_pupil(cropped,gbkernel,threshval):
         ellipsed = cv2.ellipse(cropped.copy(),ellipses[target_id],(0,255,0),2)
     else:
         ellipsed = cropped.copy()
-    return interblur,interthresh,contours,ellipses,ellipsed
+
+    return interblur,interthresh,interedged,contours,ellipses,ellipsed,target_id
 
 def adjust_parameres(cropped):
     """
@@ -180,7 +184,7 @@ def adjust_parameres(cropped):
         if gbkernel % 2 == 0:
             gbkernel = gbkernel + 1
 
-        interblur,interthresh,contours,ellipses,ellipsed = find_pupil(cropped,gbkernel,threshval)
+        interblur,interthresh,interedged,contours,ellipses,ellipsed,target_id = find_pupil(cropped,gbkernel,threshval)
 
     cv2.destroyAllWindows()
     
@@ -193,17 +197,16 @@ def run(filename):
     output: who cares ?
     """
 
-    """
-    init list to store a random noise we call data
-    """
-    pupil_area = []
-    pupil_center = []
-
     # Load the video. 0 stays for binary (grayscaled, 1-channel) image loading.
     cap = cv2.VideoCapture(filename,0)
     length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     # Test for crop. Will be used later in code to crop the eye region.
     selection_set = False
+
+    #since we know the lenght of video we can init the size of arrays 
+
+    pupil_area = np.zeros(length)
+    pupil_center = np.zeros([length,2])
 
     # Start the processing. The while loop iterates over all the frames in given data set one by one.
     for i in trange(length):    
@@ -230,13 +233,21 @@ def run(filename):
         # Crop the frame according to region selected in the beginning.
         cropped = frame[r[1]:(r[1]+r[3]),r[0]:(r[0]+r[2])]
         
-        interblur,interthresh,contours,ellipses,ellipsed = find_pupil(cropped,gbkernel,threshval)
+        interblur,interthresh,interedged,contours,ellipses,ellipsed,target_id = find_pupil(cropped,gbkernel,threshval)
         
         result = stack2x2(interblur,interthresh,interedged,ellipsed)
+
+        center, axes, _ = ellipses[target_id]
+        ellarea = math.pi / 4 * axes[0] * axes[1]
         
-        pupil_area.extend([0])
-        pupil_center.extend([(0,0)])
-            
+        pupil_area[i] = ellarea
+        pupil_center[i][0] = center[0]+r[0]
+        pupil_center[i][1] = center[1]+r[3]
+        
+        text_output = 'pupil_area: '+str(pupil_area[i]) + '\npupil_center: '+str(pupil_center[i][0])+' '+str(pupil_center[i][1]) 
+
+        cv2.putText(result,text_output,(10,500), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255,0,0),1,cv2.LINE_AA)
+
         # Pop-up all four steps 
         cv2.imshow('result',result)
         
