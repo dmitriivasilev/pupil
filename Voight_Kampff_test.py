@@ -1,5 +1,5 @@
 """
-Voight Kampff Test for detecting roden replicants
+Voight Kampff Test for detecting rodent replicants
 
 ===========================WARNING!=====================================
 
@@ -23,8 +23,8 @@ Satan Himself satan666@gmail.com
 """
 
 """
-                                                                    "Thus I have seen You in the sanctuary, To see Your power and Your glory."
-                                                                                                                                  Psalm 63:2
+                                                        "Thus I have seen You in the sanctuary, To see Your power and Your glory."
+                                                                                                                    Psalm 63:2
 """
 
 from tqdm import tqdm,trange
@@ -117,7 +117,8 @@ def find_pupil(cropped,gbkernel,threshval):
         #
         
     loss = np.asarray([cv2.arcLength(cnt,True)/cv2.contourArea(cnt) if cv2.contourArea(cnt)!=0 else 100500 for cnt in contours])
-    loss2 = np.asarray([(math.pi*((3*(ellipses[0][1][0] + ellipses[0][1][1])/2) - math.sqrt((3*ellipses[0][1][0]+ellipses[0][1][1])*(ellipses[0][1][0]+3*ellipses[0][1][1])/2)))/(math.pi / 4 * ellipses[0][1][0] * ellipses[0][1][1]) for x in ellipses])
+    
+    #loss2 = np.asarray([(math.pi*((3*(ellipses[0][1][0] + ellipses[0][1][1])/2) - math.sqrt((3*ellipses[0][1][0]+ellipses[0][1][1])*(ellipses[0][1][0]+3*ellipses[0][1][1])/2)))/(math.pi / 4 * ellipses[0][1][0] * ellipses[0][1][1]) for x in ellipses])
         
         # Find the index of the minimal element of these perimeter/area ratios and pick the closest to a circle ellipse.
         # If ellipse has a better ratio, than math is on our side.
@@ -125,10 +126,8 @@ def find_pupil(cropped,gbkernel,threshval):
         # This was implemented to minimize the probability of chosing wrong ellipse.
     target_id = 0 #wtf?
     if loss.size != 0:    
-        if np.argmin(loss) != np.argmin(loss2):
-            target_id = np.argmin(loss)
-        else:
-            target_id = np.argmin(loss2)
+        target_id = np.argmin(loss)
+        
         # Draw an ellipse on the cropped image.
         ellipsed = cv2.ellipse(cropped.copy(),ellipses[target_id],(0,255,0),2)
     else:
